@@ -1,0 +1,47 @@
+import { CalendarDays, X } from "lucide-react";
+import { ModifiedCalendarWithPresets } from "../addQuest/form/ModifiedCalendarWithPresets";
+
+export const DatePickerField = ({
+  formData,
+  isCalendarOpen,
+  setIsCalendarOpen,
+  calendarDate,
+  handleDateSelect,
+  handleClearDate,
+}) => {
+  return (
+    <div className="relative flex items-center bg-card border border-border px-2.5 py-1 rounded-full shadow-xs hover:border-primary/50 hover:bg-muted/30 transition-all">
+      <button
+        type="button"
+        onClick={() => setIsCalendarOpen((prev) => !prev)}
+        className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground focus:outline-none"
+      >
+        <CalendarDays className="w-3.5 h-3.5 text-primary" />
+        <span className="text-xs font-medium text-foreground whitespace-nowrap">
+          {formData.date ? formData.date : "Due Date"}
+        </span>
+      </button>
+
+      {/* Clear button appears only when a date is selected */}
+      {formData.date && (
+        <button
+          type="button"
+          onClick={handleClearDate}
+          className="ml-1.5 p-0.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors focus:outline-none"
+          title="Clear date"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
+
+      {isCalendarOpen && (
+        <div className="absolute top-full mt-2 left-0 z-50 shadow-xl rounded-xl bg-card text-card-foreground border border-border p-2 animate-in fade-in zoom-in-95 duration-150">
+          <ModifiedCalendarWithPresets
+            date={calendarDate}
+            setDate={handleDateSelect}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
