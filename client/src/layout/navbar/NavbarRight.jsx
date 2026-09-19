@@ -1,3 +1,4 @@
+// frontend/src/components/NavbarRight.jsx
 import profile from "../../assets/default-avatar.png";
 
 const NavbarRight = ({
@@ -7,13 +8,14 @@ const NavbarRight = ({
   handleLogout,
   onNavigate,
 }) => {
+  console.log("🔍 NAVBAR USER OBJECT:", user);
+
   return (
     <div className="navbar-right">
       {user ? (
         /* Logged In State */
         <div className="relative">
           <div
-            // Changed hover:bg-card to hover:bg-accent/50 (or any custom shade) for a different hover color
             className="flex items-center gap-3 cursor-pointer select-none p-1.5 rounded-lg hover:bg-accent/50 transition-colors"
             onClick={() => setIsDropdownOpen((prev) => !prev)}
           >
@@ -22,7 +24,13 @@ const NavbarRight = ({
               alt="profile"
               className="w-10 h-10 rounded-full object-cover border border-border"
             />
-            <span className="font-medium text-foreground">username</span>
+            {/* DYNAMIC USERNAME: Tries name, then username, then the part of email before '@', then 'User' */}
+            <span className="font-medium text-foreground">
+              {user?.name ||
+                user?.username ||
+                user?.email?.split("@")[0] ||
+                "User"}
+            </span>
           </div>
 
           {/* Dropdown Menu */}
@@ -33,14 +41,12 @@ const NavbarRight = ({
                   setIsDropdownOpen(false);
                   onNavigate("/profile");
                 }}
-                // Changed hover:bg-muted to hover:bg-accent/40 for the dropdown items
                 className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent/40 transition-colors cursor-pointer"
               >
                 Profile
               </button>
               <button
                 onClick={handleLogout}
-                // Changed hover:bg-muted to hover:bg-destructive/10 for a subtle tinted logout hover
                 className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
               >
                 Logout

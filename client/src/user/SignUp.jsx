@@ -1,73 +1,38 @@
-// frontend/src/pages/Login.jsx
+// src/user/SignUp.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../schemas/authSchema";
-import { useAuth } from "../context/AuthContext";
-import axios from "axios"; // 🚨 CRITICAL: We must import axios to make the API call!
-import "./Login.css";
+import { signupSchema } from "../schemas/authSchema";
+import { signup } from "../api/auth";
+import "./Signup.css";
 
-const Login = () => {
+const SignUp = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // This is ONLY for saving state, not for API calls
   const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState("");
 
+  // Initialize React Hook Form with Zod
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(signupSchema),
   });
 
   const onSubmit = async (data) => {
     setServerError("");
-
+    setSuccess("");
     try {
-      // 1. 🚨 MAKE THE ACTUAL API CALL TO THE BACKEND
-      const response = await axios.post(
-        "http://localhost:5000/api/users/login",
-        {
-          email: data.email,
-          password: data.password,
-        },
-      );
+      const response = await signup(data); // data is already validated by Zod!
+      setSuccess(response.message);
 
-      console.log("🔥 FULL LOGIN RESPONSE:", response.data);
-
-      // 2. Extract data from the REAL backend response
-      const token = response.data.token;
-      const backendData = response.data.user || response.data;
-
-      // 3. Verify the backend actually sent a token
-      if (token) {
-        // Construct a clean, standardized user object
-        const userData = {
-          username: backendData.username || data.email.split("@")[0],
-          email: backendData.email || data.email,
-          id: backendData._id || backendData.id,
-        };
-
-        // 4. NOW call the AuthContext function to save the valid data to state/localStorage
-        login(userData, token);
-
-        // 5. Redirect to the dashboard
-        navigate("/dashboard", { replace: true });
-      } else {
-        setServerError(
-          "Login successful, but no token was received from the server.",
-        );
-      }
+      setTimeout(() => {
+        navigate("/login");
+      }, 4000);
     } catch (err) {
-      console.error("Login error:", err);
-
-      // Fallback to error message from backend or default message
-      setServerError(
-        err.response?.data?.message ||
-          err.message ||
-          "Invalid email or password", // More user-friendly message
-      );
+      setServerError(err.message);
     }
   };
 
@@ -75,14 +40,40 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-background rounded-lg shadow-lg p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-foreground mb-6 text-center">
-          Login
+          Sign Up
         </h1>
 
         {serverError && (
-          <p className="text-red-500 mb-4 text-center text-sm">{serverError}</p>
+          <p className="text-red-500 mb-4 text-center">{serverError}</p>
+        )}
+        {success && (
+          <p className="text-green-600 mb-4 text-center">{success}</p>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Username Field */}
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-foreground"
+            >
+              Username
+            </label>
+            <input
+              {...register("username")}
+              type="text"
+              id="username"
+              className={`mt-1 p-2 block w-full rounded-md border ${
+                errors.username ? "border-red-500" : "border-border"
+              } focus:outline-none focus:ring-1 focus:ring-primary`}
+            />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.username.message}
+              </p>
+            )}
+          </div>
+
           {/* Email Field */}
           <div className="mb-4">
             <label
@@ -132,9 +123,9 @@ const Login = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-primary text-primary-foreground py-2 px-4 rounded-lg w-full hover:bg-primary/80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="bg-primary text-primary-foreground py-2 px-4 rounded-lg w-full hover:bg-primary/80 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
       </div>
@@ -142,4 +133,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;

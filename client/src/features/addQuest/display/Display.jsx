@@ -1,5 +1,5 @@
 import { EmptyState } from "./EmptyState";
-import { QuestCard } from "./QuestCard";
+import { QuestCard } from "../..//../components/shared/QuestCard";
 
 export const Display = ({
   quests,

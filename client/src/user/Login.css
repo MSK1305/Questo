@@ -1,0 +1,30 @@
+/* src/pages/Login.css */
+@layer base {
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+
+  .bg-primary {
+    background-color: hsl(var(--primary));
+  }
+
+  .text-primary-foreground {
+    color: hsl(var(--primary-foreground));
+  }
+
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+
+  .focus-ring-primary {
+    box-shadow: 0 0 0 2px hsl(var(--primary));
+  }
+
+  .focus-ring {
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+  }
+}
